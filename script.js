@@ -1,59 +1,50 @@
 
-function kirim() {
+async function kirim() {
     const input = document.getElementById("pesan");
     const chatbox = document.getElementById("chatbox");
 
-    const pertanyaan = input.value.trim().toLowerCase();
+    const message = input.value.trim();
+    if (!message) return;
 
-    if (pertanyaan === "") return;
+    const userDiv = document.createElement("div");
+    userDiv.className = "user";
+    userDiv.textContent = message;
+    chatbox.appendChild(userDiv);
 
-    // Menampilkan pesan pengguna
-    const pesanUser = document.createElement("div");
-    pesanUser.className = "user";
-    pesanUser.textContent = input.value;
-    chatbox.appendChild(pesanUser);
+    input.value = "";
 
-    let jawaban = "";
-
-    if (pertanyaan.includes("halo") || pertanyaan.includes("hai")) {
-        jawaban = "Halo juga! Selamat datang di Chatbot TKJ.";
-    }
-    else if (pertanyaan.includes("tkj")) {
-        jawaban = "TKJ adalah Teknik Komputer dan Jaringan.";
-    }
-    else if (pertanyaan.includes("komputer")) {
-        jawaban = "Komputer merupakan perangkat elektronik untuk mengolah data.";
-    }
-    else if (pertanyaan.includes("ip address") || pertanyaan.includes("ip")) {
-        jawaban = "IP Address adalah alamat identitas perangkat pada jaringan.";
-    }
-    else if (pertanyaan.includes("router")) {
-        jawaban = "Router berfungsi menghubungkan beberapa jaringan.";
-    }
-    else if (pertanyaan.includes("switch")) {
-        jawaban = "Switch menghubungkan beberapa perangkat dalam jaringan LAN.";
-    }
-    else if (pertanyaan.includes("terima kasih")) {
-        jawaban = "Sama-sama. Semangat belajar TKJ!";
-    }
-    else {
-        jawaban = "Maaf, saya belum memahami pertanyaan Anda.";
-    }
-
-    // Menampilkan jawaban bot
-    const pesanBot = document.createElement("div");
-    pesanBot.className = "bot";
-    pesanBot.textContent = jawaban;
-    chatbox.appendChild(pesanBot);
+    const loading = document.createElement("div");
+    loading.className = "bot";
+    loading.textContent = "AI sedang berpikir...";
+    chatbox.appendChild(loading);
 
     chatbox.scrollTop = chatbox.scrollHeight;
-    input.value = "";
-    input.focus();
-}
 
-// Mengirim pesan dengan tombol Enter
-document.getElementById("pesan").addEventListener("keydown", function(event) {
-    if (event.key === "Enter") {
-        kirim();
+    try {
+        const response = await fetch(
+            "https://GANTI-URL-WORKER-ANDA.workers.dev",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: message
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Permintaan AI gagal");
+        }
+
+        loading.textContent = data.reply || "AI tidak memberikan jawaban.";
+
+    } catch (error) {
+        loading.textContent = "Gagal terhubung ke AI: " + error.message;
     }
-});
+
+    chatbox.scrollTop = chatbox.scrollHeight;
+}
