@@ -22,7 +22,7 @@ async function kirim() {
 
     try {
         const response = await fetch(
-            "https://GANTI-URL-WORKER-ANDA.workers.dev",
+            "https://chatbot-tkj-online3.rahmangaucho1.workers.dev/",
             {
                 method: "POST",
                 headers: {
