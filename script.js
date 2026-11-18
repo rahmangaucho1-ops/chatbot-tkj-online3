@@ -1,4 +1,3 @@
-
 async function kirim() {
     const input = document.getElementById("pesan");
     const chatbox = document.getElementById("chatbox");
